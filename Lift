@@ -1,9 +1,10 @@
+-- Создаем GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "FruzettaMenu"
 screenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 200, 0, 100)
+mainFrame.Size = UDim2.new(0, 200, 0, 170)
 mainFrame.Position = UDim2.new(0, 10, 0, 10)
 mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 mainFrame.BorderSizePixel = 0
@@ -25,29 +26,76 @@ title.TextSize = 16
 title.Font = Enum.Font.GothamBold
 title.Parent = mainFrame
 
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0.8, 0, 0, 40)
-toggleButton.Position = UDim2.new(0.1, 0, 0.4, 0)
-toggleButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-toggleButton.Text = "OFF"
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.TextSize = 14
-toggleButton.Font = Enum.Font.GothamBold
-toggleButton.Parent = mainFrame
+-- Кнопка "Спиздить вес"
+local stealButton = Instance.new("TextButton")
+stealButton.Size = UDim2.new(0.8, 0, 0, 40)
+stealButton.Position = UDim2.new(0.1, 0, 0.25, 0)
+stealButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+stealButton.Text = "Спиздить вес: OFF"
+stealButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+stealButton.TextSize = 14
+stealButton.Font = Enum.Font.GothamBold
+stealButton.Parent = mainFrame
+
+-- Кнопка "Дюп веса"
+local dupButton = Instance.new("TextButton")
+dupButton.Size = UDim2.new(0.8, 0, 0, 40)
+dupButton.Position = UDim2.new(0.1, 0, 0.6, 0)
+dupButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+dupButton.Text = "Дюп веса: OFF"
+dupButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+dupButton.TextSize = 14
+dupButton.Font = Enum.Font.GothamBold
+dupButton.Parent = mainFrame
 
 local toggleCorner = Instance.new("UICorner")
 toggleCorner.CornerRadius = UDim.new(0, 6)
-toggleCorner.Parent = toggleButton
+toggleCorner.Parent = stealButton
+toggleCorner:Clone().Parent = dupButton
 
+-- Логика для "Спиздить вес"
+_G.StealWeight = false
+local originalParent = nil
+
+stealButton.MouseButton1Click:Connect(function()
+    _G.StealWeight = not _G.StealWeight
+    
+    if _G.StealWeight then
+        stealButton.BackgroundColor3 = Color3.fromRGB(60, 200, 60)
+        stealButton.Text = "Спиздить вес: ON"
+        
+        -- Перемещаем инструмент в рюкзак
+        local targetPlayer = workspace:FindFirstChild("Nagibator_1370")
+        if targetPlayer then
+            local tool = targetPlayer:FindFirstChild("ULTIMATE SUPREME CLASS")
+            if tool then
+                originalParent = tool.Parent
+                tool.Parent = game:GetService("Players").LocalPlayer.Backpack
+            end
+        end
+        
+    else
+        stealButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+        stealButton.Text = "Спиздить вес: OFF"
+        
+        -- Возвращаем инструмент обратно
+        local tool = game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("ULTIMATE SUPREME CLASS")
+        if tool and originalParent then
+            tool.Parent = originalParent
+        end
+    end
+end)
+
+-- Логика для "Дюп веса"
 _G.AutoFarm = false
 local connections = {}
 
-toggleButton.MouseButton1Click:Connect(function()
+dupButton.MouseButton1Click:Connect(function()
     _G.AutoFarm = not _G.AutoFarm
     
     if _G.AutoFarm then
-        toggleButton.BackgroundColor3 = Color3.fromRGB(60, 200, 60)
-        toggleButton.Text = "ON"
+        dupButton.BackgroundColor3 = Color3.fromRGB(60, 200, 60)
+        dupButton.Text = "Дюп веса: ON"
         
         -- Множество потоков для максимальной скорости
         for i = 1, 50 do
@@ -67,10 +115,9 @@ toggleButton.MouseButton1Click:Connect(function()
         end
         
     else
-        toggleButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-        toggleButton.Text = "OFF"
+        dupButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+        dupButton.Text = "Дюп веса: OFF"
         
-        -- Отключаем все соединения
         for _, conn in pairs(connections) do
             conn:Disconnect()
         end
@@ -78,4 +125,4 @@ toggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
-print("Fruzetta Menu loaded! Drag to move.")
+print("робит.")
