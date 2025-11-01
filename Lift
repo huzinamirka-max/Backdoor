@@ -1,0 +1,81 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FruzettaMenu"
+screenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 200, 0, 100)
+mainFrame.Position = UDim2.new(0, 10, 0, 10)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = mainFrame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+title.Text = "Fruzetta"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 16
+title.Font = Enum.Font.GothamBold
+title.Parent = mainFrame
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0.8, 0, 0, 40)
+toggleButton.Position = UDim2.new(0.1, 0, 0.4, 0)
+toggleButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+toggleButton.Text = "OFF"
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextSize = 14
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.Parent = mainFrame
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 6)
+toggleCorner.Parent = toggleButton
+
+_G.AutoFarm = false
+local connections = {}
+
+toggleButton.MouseButton1Click:Connect(function()
+    _G.AutoFarm = not _G.AutoFarm
+    
+    if _G.AutoFarm then
+        toggleButton.BackgroundColor3 = Color3.fromRGB(60, 200, 60)
+        toggleButton.Text = "ON"
+        
+        -- Множество потоков для максимальной скорости
+        for i = 1, 50 do
+            local conn = game:GetService("RunService").Heartbeat:Connect(function()
+                if _G.AutoFarm then
+                    local character = game:GetService("Players").LocalPlayer.Character
+                    if character then
+                        local ultimate = character:FindFirstChild("ULTIMATE SUPREME CLASS")
+                        if ultimate then
+                            local remote = ultimate.Script.RemoteEvent
+                            remote:FireServer()
+                        end
+                    end
+                end
+            end)
+            table.insert(connections, conn)
+        end
+        
+    else
+        toggleButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+        toggleButton.Text = "OFF"
+        
+        -- Отключаем все соединения
+        for _, conn in pairs(connections) do
+            conn:Disconnect()
+        end
+        connections = {}
+    end
+end)
+
+print("Fruzetta Menu loaded! Drag to move.")
